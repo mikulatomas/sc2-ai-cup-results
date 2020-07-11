@@ -30,3 +30,7 @@ def create_app(test_config=None):
     app.register_blueprint(index.bp)
 
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run()    
