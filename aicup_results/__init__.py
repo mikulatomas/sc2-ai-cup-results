@@ -23,11 +23,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # from . import api
-    # app.register_blueprint(api.bp)
+    from . import api
+    app.register_blueprint(api.bp)
 
-    from . import index
-    app.register_blueprint(index.bp)
+    # from . import index
+    # app.register_blueprint(index.bp)
 
     return app
 

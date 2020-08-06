@@ -6,6 +6,7 @@ from glob import glob
 import os
 import shutil
 from zipfile import ZipFile
+import subprocess
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -28,13 +29,18 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 #                 shutil.rmtree(bot_dir)
 
 #             zipObj.extractall(bots_dir)
-    
 
-# @bp.route('/run')
-# def api_run():
-#     generate_ladder_bots()
 
-#     return jsonify({'Error': 'No results.'})
+@bp.route('/run')
+def api_run():
+    subprocess.Popen([current_app.config['LADDERBIN'],
+                      "-e", current_app.config['SC2BIN']],
+                     cwd=current_app.config['BOT_CONFIG'],
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT)
+
+    return jsonify({'Done': 'Running.'})
+
 
 @bp.route('/results')
 def api_results():
