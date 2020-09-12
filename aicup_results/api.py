@@ -38,7 +38,7 @@ def api_run():
     if os.path.exists(current_app.config['MATCHUPLIST']):
         os.remove(current_app.config['MATCHUPLIST'])
     else:
-        print("The file does not exist")
+        print(f"The file {current_app.config['MATCHUPLIST']} does not exist")
 
     # run matches
     log = open(current_app.config['FLASK_LOG'], 'ab')
