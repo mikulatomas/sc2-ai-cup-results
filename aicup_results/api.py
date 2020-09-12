@@ -3,10 +3,12 @@ from flask import (
 )
 import json
 from glob import glob
+import sys
+import sys
+from subprocess import Popen, PIPE, STDOUT
 import os
 import shutil
 from zipfile import ZipFile
-import subprocess
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -33,11 +35,12 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route('/run')
 def api_run():
-    subprocess.Popen([current_app.config['LADDERBIN'],
-                      "-e", current_app.config['SC2BIN']],
-                     cwd=current_app.config['BOT_CONFIG'],
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT)
+    with Popen([current_app.config['LADDERBIN'],
+                "-e", current_app.config['SC2BIN']], cwd=current_app.config['BOT_CONFIG'], stdout=PIPE, stderr=STDOUT, bufsize=1) as p, \
+            open(current_app.config['FLASK_LOG'], 'ab') as file:
+        for line in p.stdout:  # b'\n'-separated lines
+            sys.stdout.buffer.write(line)  # pass bytes as is
+            file.write(line)
 
     return jsonify({'Done': 'Running.'})
 
