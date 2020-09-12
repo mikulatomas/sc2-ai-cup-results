@@ -4,7 +4,6 @@ from flask import (
 import json
 from glob import glob
 import sys
-import sys
 from subprocess import Popen, PIPE, STDOUT
 import os
 import shutil
@@ -35,12 +34,16 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route('/run')
 def api_run():
-    with Popen([current_app.config['LADDERBIN'],
-                "-e", current_app.config['SC2BIN']], cwd=current_app.config['BOT_CONFIG'], stdout=PIPE, stderr=STDOUT, bufsize=1) as p, \
-            open(current_app.config['FLASK_LOG'], 'ab') as file:
-        for line in p.stdout:  # b'\n'-separated lines
-            sys.stdout.buffer.write(line)  # pass bytes as is
-            file.write(line)
+    # delete old matchup list
+    if os.path.exists(current_app.config['MATCHUPLIST']):
+        os.remove(current_app.config['MATCHUPLIST'])
+    else:
+        print("The file does not exist")
+
+    # run matches
+    log = open(current_app.config['FLASK_LOG'], 'ab')
+    p = Popen([current_app.config['LADDERBIN'],
+               "-e", current_app.config['SC2BIN']], cwd=current_app.config['BOT_CONFIG'], stdout=log, stderr=STDOUT, bufsize=1)
 
     return jsonify({'Done': 'Running.'})
 
