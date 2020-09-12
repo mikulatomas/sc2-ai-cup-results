@@ -35,10 +35,10 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 @bp.route('/run')
 def api_run():
     # delete old matchup list
-    if os.path.exists(current_app.config['MATCHUPLIST']):
-        os.remove(current_app.config['MATCHUPLIST'])
-    else:
-        print("The file does not exist")
+    # if os.path.exists(current_app.config['MATCHUPLIST']):
+    os.remove(current_app.config['MATCHUPLIST'])
+    # else:
+    #     print("The file does not exist")
 
     # run matches
     log = open(current_app.config['FLASK_LOG'], 'ab')
