@@ -37,7 +37,6 @@ def api_results():
 
             replay_file = f"{result['Bot1']}v{result['Bot2']}-{map_name}.SC2Replay"
 
-            # print(results[date]['Results'])
             results[date]['Results'][0]['Replay'] = url_for(
                 '.api_replays', date=date, filename=replay_file, _external=True)
 
