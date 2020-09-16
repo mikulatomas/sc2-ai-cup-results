@@ -1,0 +1,22 @@
+{
+    "Results": [
+        {
+            "Bot1": "marinerush_bot",
+            "Bot2": "workerrush_bot",
+            "Winner": "workerrush_bot",
+            "Map": "sc2-ai-cup-2020.SC2Map",
+            "Result": "Player2Win",
+            "GameTime": 2736,
+            "TimeStamp": "16-09-2020 12-21-46UTC"
+        },
+        {
+            "Bot1": "workerrush_bot",
+            "Bot2": "marinerush_bot",
+            "Winner": "workerrush_bot",
+            "Map": "sc2-ai-cup-2020.SC2Map",
+            "Result": "Player1Win",
+            "GameTime": 3192,
+            "TimeStamp": "16-09-2020 12-22-32UTC"
+        }
+    ]
+}

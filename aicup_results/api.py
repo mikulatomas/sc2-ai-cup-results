@@ -1,56 +1,39 @@
 from flask import (
-    current_app, Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
+    current_app, Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify, send_file
 )
 import json
-# from glob import glob
-# import sys
-# from subprocess import Popen, PIPE, STDOUT
-# import os
-# import shutil
-# from zipfile import ZipFile
+from glob import glob
+import os
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
-# @bp.route('/')
-# def api_index():
-#     return jsonify({'a': current_app.config['BOT_DIR']})
 
-# def generate_ladder_bots():
-#     bots_dir = current_app.config['BOT_DIR']
-#     print(bots_dir)
-
-#     for zip_file in glob(os.path.join(bots_dir, '*.zip')):
-#         bot_dir = zip_file.replace('.zip', '/')
-#         print(bot_dir)
-
-#         with ZipFile(zip_file, 'r') as zipObj:
-#             if os.path.exists(bot_dir) and os.path.isdir(bot_dir):
-#                 print("removing")
-#                 shutil.rmtree(bot_dir)
-
-#             zipObj.extractall(bots_dir)
-
-
-# @bp.route('/run')
-# def api_run():
-#     # delete old matchup list
-#     if os.path.exists(current_app.config['MATCHUPLIST']):
-#         os.remove(current_app.config['MATCHUPLIST'])
-#     else:
-#         print(f"The file {current_app.config['MATCHUPLIST']} does not exist")
-
-#     # run matches
-#     log = open(current_app.config['FLASK_LOG'], 'ab')
-#     p = Popen([current_app.config['LADDERBIN'],
-#                "-e", current_app.config['SC2BIN']], cwd=current_app.config['BOT_CONFIG'], stdout=log, stderr=STDOUT, bufsize=1)
-
-#     return jsonify({'Done': 'Running.'})
+@bp.route('/replays')
+def api_replays():
+    date = request.args.get('date')
+    filename = request.args.get('filename')
+    with open(os.path.join(current_app.config['RESULTS'], date, filename)) as file:
+        return send_file(file, mimetype='application/octet-stream', attachment_filename=filename, as_attachment=True)
 
 
 @bp.route('/results')
 def api_results():
-    try:
-        with open(current_app.config['RESULTS']) as json_file:
-            return jsonify(json.load(json_file))
-    except (IOError, EOFError) as e:
-        return jsonify({'Error': 'No results.'})
+    # print(glob(os.path.join(current_app.config['RESULTS'], '*-*-*')))
+
+    results = {}
+    for path in glob(os.path.join(current_app.config['RESULTS'], '*')):
+        date = os.path.basename(path)
+
+        with open(os.path.join(path, 'Results.json')) as json_file:
+            results[date] = json.load(json_file)
+
+        for result in results[date]['Results']:
+            map_name = result['Map'].replace('.SC2Map', '')
+
+            replay_file = f"{result['Bot1']}v{result['Bot2']}-{map_name}.SC2Replay"
+
+            # print(results[date]['Results'])
+            results[date]['Results'][0]['Replay'] = url_for(
+                '.api_replays', date=date, filename=replay_file, _external=True)
+
+    return jsonify(results)
