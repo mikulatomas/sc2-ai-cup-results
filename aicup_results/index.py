@@ -1,14 +1,10 @@
-# from flask import (
-#     current_app, Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
-# )
+from flask import (
+    Blueprint, current_app, redirect
+)
 
-# import json
-
-# import uuid
-
-# bp = Blueprint('index', __name__,)
+bp = Blueprint('index', __name__,)
 
 
-# @bp.route('/')
-# def index():
-#     return "Test"
+@bp.route('/')
+def index():
+    return redirect(current_app.config['WEB'], code=302)

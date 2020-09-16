@@ -12,14 +12,19 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 def api_replays():
     date = request.args.get('date')
     filename = request.args.get('filename')
-    with open(os.path.join(current_app.config['RESULTS'], date, filename)) as file:
-        return send_file(file, mimetype='application/octet-stream', attachment_filename=filename, as_attachment=True)
+
+    if date is None or filename is None:
+        return jsonify({'error': 'You have to provide date and filename!'})
+
+    try:
+        with open(os.path.join(current_app.config['RESULTS'], date, filename)) as file:
+            return send_file(file, mimetype='application/octet-stream', attachment_filename=filename, as_attachment=True)
+    except FileNotFoundError as e:
+        return jsonify({'error': 'File not found!'})
 
 
 @bp.route('/results')
 def api_results():
-    # print(glob(os.path.join(current_app.config['RESULTS'], '*-*-*')))
-
     results = {}
     for path in glob(os.path.join(current_app.config['RESULTS'], '*')):
         date = os.path.basename(path)
